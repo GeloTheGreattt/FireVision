@@ -68,7 +68,7 @@ require_once 'templates/admin_header.php';
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Admin Register</h1>
+                    <h1 class="h3 mb-2 text-gray-800">User Register</h1>
                     <a href="user_management.php" class="btn btn-secondary mb-3">Back</a>
                     
                     <div class="container">
