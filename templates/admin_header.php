@@ -17,4 +17,43 @@
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
 
+    <style>
+
+.snapshot-modal .modal-content {
+    background-color: #000; /* Example: dark background */
+    border: none;
+    border-radius: 0;
+    background: transparent !important;
+    border: none;
+}
+
+.snapshot-modal .modal-header {
+    border-bottom: none; /* Removes that white line */
+    padding: 0.5rem 1rem;
+}
+
+.snapshot-modal .modal-body {
+    padding: 0;
+    text-align: center;
+}
+
+.snapshot-modal .close {
+    color: #fff;
+    opacity: 1;
+    font-size: 2rem;
+}
+
+.snapshot-modal .modal-header {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.snapshot-modal .close {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+    </style>
+
 </head>

@@ -220,14 +220,23 @@ require_once 'templates/admin_header.php';
                                     <thead>
                                         <tr>
                                             <th>Time</th>
-                                            <th>Confidence</th>
+                                            <th>Snapshot</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php foreach ($recentAlerts as $alert): ?>
                                         <tr>
                                             <td><?php echo htmlspecialchars($alert['created_at']); ?></td>
-                                            <td><?php echo htmlspecialchars($alert['confidence']); ?></td>
+                                            <td>
+                                            <?php if (!empty($alert['snapshot'])): ?>
+                                              <!-- Trigger Modal -->
+                                            <a href="#" data-toggle="modal" data-target="#snapshotModal" data-img="<?= htmlspecialchars($alert['snapshot']); ?>">
+                                                <img src="<?= htmlspecialchars($alert['snapshot']) ?>" alt="Snapshot" style="width: 80px; height: auto;">
+                                            </a>
+                                            <?php else: ?>
+                                            No snapshot
+                                            <?php endif; ?>   
+                                            </td>                                     
                                         </tr>
                                         <?php endforeach; ?>
                                     </tbody>
@@ -297,8 +306,32 @@ require_once 'templates/admin_header.php';
     }
     ?>
 
+<!-- Image Modal -->
+<div class="modal fade snapshot-modal" id="snapshotModal" tabindex="-1" role="dialog" aria-labelledby="snapshotModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img src="" id="modalImage" class="img-fluid" alt="Snapshot">
+            </div>
+        </div>
+    </div>
+</div>
 </body>
+<script>
 
+$('#snapshotModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget); // Button that triggered the modal
+    var imgSrc = button.data('img'); // Extract image source
+    var modal = $(this);
+    modal.find('#modalImage').attr('src', imgSrc); // Update modal image source
+});
+
+</script>
 </html>
 
 

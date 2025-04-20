@@ -11,8 +11,8 @@ $(function () {
     let detectionStartTime = null;      // Tracks the first hazard detection
     let secondCountdownStart = null;    // Tracks when the second countdown begins
     let lastFireDetectedTime = null;    // Tracks when hazard was last seen (renamed for clarity)
-    const firstCountdownDuration = 2000; // 4 Seconds
-    const secondCountdownDuration = 3000;// 5 seconds
+    const firstCountdownDuration = 6000; // 4 Seconds
+    const secondCountdownDuration = 6000;// 5 seconds
     const gracePeriodDuration = 1000;   // 1 second grace period
     let detectionPaused = false;        // State variable for pausing detection
     // --- End Merged Variables ---
@@ -205,8 +205,8 @@ $(function () {
                     }
     
                     if (secondElapsed >= secondCountdownDuration) {
-                        sendAlert({ class: "fire", confidence: 1.0 });
-                        showFireModal(); // 👈 Show the alert modal after sending the alert
+                        sendAlert({ class: "fire", confidence: 1.0, snapshot: captureSnapshot() });
+                        showFireModal();
                         resetCountdown();
                     } else {
                         drawCountdown(`ALERT IN: ${(secondCountdownDuration - secondElapsed) / 1000}s`);
@@ -267,6 +267,15 @@ $(function () {
             });
     }
 
+    function captureSnapshot() {
+        const snapshotCanvas = document.createElement("canvas");
+        snapshotCanvas.width = video.videoWidth;
+        snapshotCanvas.height = video.videoHeight;
+        const snapshotCtx = snapshotCanvas.getContext("2d");
+        snapshotCtx.drawImage(video, 0, 0, snapshotCanvas.width, snapshotCanvas.height);
+        return snapshotCanvas.toDataURL("image/jpeg", 0.8); // returns Base64 image
+    }
+
     function sendAlert(prediction) {
         fetch("alert.php", {
             method: "POST",
@@ -277,4 +286,7 @@ $(function () {
         .then(data => console.log("Alert response:", data))
         .catch(error => console.error("Error sending alert:", error));
     }
+
+
+
 });

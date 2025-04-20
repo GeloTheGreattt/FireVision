@@ -16,20 +16,43 @@ try {
     }
 
     $data = json_decode($json, true);
-    if (!$data || !isset($data['class'], $data['confidence'])) {
+    if (!$data || !isset($data['class'], $data['confidence'], $data['snapshot'])) {
         throw new Exception("Invalid data format.");
     }
 
-    // Insert alert into the database
-    $stmt = $pdo->prepare("INSERT INTO alerts (type, confidence) VALUES (?, ?)");
-    $stmt->execute([$data['class'], $data['confidence']]);
 
+    $snapshotData = $data['snapshot'];
+    $snapshotPath = null;
+    
+    if (preg_match('/^data:image\/(\w+);base64,/', $snapshotData, $type)) {
+        $snapshotData = substr($snapshotData, strpos($snapshotData, ',') + 1);
+        $type = strtolower($type[1]);
+    
+        if (!in_array($type, ['jpg', 'jpeg', 'png'])) {
+            throw new Exception("Invalid image type.");
+        }
+    
+        $snapshotData = base64_decode($snapshotData);
+        if ($snapshotData === false) {
+            throw new Exception("Base64 decode failed.");
+        }
+    
+        $filename = 'snapshots/' . uniqid('snapshot_', true) . '.' . $type;
+        file_put_contents($filename, $snapshotData);
+        $snapshotPath = $filename;
+    }
+
+    // Insert alert into the database
+    $stmt = $pdo->prepare("INSERT INTO alerts (type, confidence, snapshot) VALUES (?, ?, ?)");
+    $stmt->execute([$data['class'], $data['confidence'], $snapshotPath]);
+
+    
 
     // Fetch all users with the "user" role from the database
     $stmt = $pdo->query("SELECT * FROM users");
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $message = "ALERT: {$data['class']} Detected!\n Confidence: {$data['confidence']}";
+    $message = "ALERT: Fire has been detected around the school premise! Please evacuate the building immediately!";
 
     // if (!$users['phone'] || empty($users['phone'])) {
     //     $_SESSION['status'] = "No Phone Numbers Found!";

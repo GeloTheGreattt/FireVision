@@ -20,6 +20,13 @@
             <span>Dashboard</span></a>
     </li>
 
+    <li class="nav-item">
+    <a class="nav-link" href="log_snapshot.php">
+        <i class="fas fa-fw fa-camera"></i>
+        <span>Alerts & Snapshots</span>
+    </a>
+</li>
+
 
     <li class="nav-item">
         <a class="nav-link" href="user_management.php">
