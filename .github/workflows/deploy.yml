@@ -19,7 +19,7 @@ jobs:
         id: get_sql_files
         run: |
           git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
-            | grep '^db/migrations/.*\.sql$' || true > changed_sql_files.txt
+            | grep '^db/migrations/.*\.sql$' > changed_sql_files.txt || true
           echo "files=$(cat changed_sql_files.txt | paste -sd "," -)" >> $GITHUB_OUTPUT
 
       - name: Upload new SQL files to EC2 (if any)
