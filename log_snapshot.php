@@ -94,10 +94,10 @@ $alerts = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
    <!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-w+KDhN2L9yMmnxXNxXWQZ7MXAxs8LZ1BrDM6z8bUeJk=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <!-- Bootstrap Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2LcQfK+2eMgkef5vO2dKCiLi1I2nB29XKJbHsMfN9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="js/sweetalert.js"></script>
     <?php if (isset($_SESSION['status'])): ?>

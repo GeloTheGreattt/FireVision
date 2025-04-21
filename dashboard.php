@@ -283,14 +283,6 @@ require_once 'templates/admin_header.php';
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
 
-    <!-- Page level plugins -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
-
-
     <script src="js/sweetalert.js"></script>
     <?php 
     if (isset($_SESSION['status']) && $_SESSION['status'] != '') {
