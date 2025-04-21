@@ -13,7 +13,7 @@ $(function () {
     let lastFireDetectedTime = null;    // Tracks when hazard was last seen (renamed for clarity)
     const firstCountdownDuration = 6000; // 4 Seconds
     const secondCountdownDuration = 6000;// 5 seconds
-    const gracePeriodDuration = 1000;   // 1 second grace period
+    const gracePeriodDuration = 1500;   // 1 second grace period
     let detectionPaused = false;        // State variable for pausing detection
     // --- End Merged Variables ---
 
