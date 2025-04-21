@@ -11,9 +11,9 @@ $(function () {
     let detectionStartTime = null;      // Tracks the first hazard detection
     let secondCountdownStart = null;    // Tracks when the second countdown begins
     let lastFireDetectedTime = null;    // Tracks when hazard was last seen (renamed for clarity)
-    const firstCountdownDuration = 6000; // 4 Seconds
-    const secondCountdownDuration = 6000;// 5 seconds
-    const gracePeriodDuration = 1500;   // 1 second grace period
+    const firstCountdownDuration = 4000; // 4 Seconds
+    const secondCountdownDuration = 4000;// 4 seconds
+    const gracePeriodDuration = 2000;   // 1.5 second grace period
     let detectionPaused = false;        // State variable for pausing detection
     // --- End Merged Variables ---
 
