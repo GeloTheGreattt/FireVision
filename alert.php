@@ -72,7 +72,7 @@ try {
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        // Get the response from your server
+        // Get the response from the server
         $response = curl_exec($ch);
         curl_close($ch);
 
