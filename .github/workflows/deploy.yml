@@ -15,21 +15,27 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get changed SQL files
-        id: get_sql_files
+      - name: Get changed SQL files and prepare for upload
+        id: prepare_sql_files
         run: |
+          mkdir upload_sql
           git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
             | grep '^db/migrations/.*\.sql$' > changed_sql_files.txt || true
-          echo "files=$(cat changed_sql_files.txt | paste -sd "," -)" >> $GITHUB_OUTPUT
+
+          while IFS= read -r file; do
+            cp "$file" "upload_sql/$(basename "$file")"
+          done < changed_sql_files.txt
+
+          echo "has_files=$(if [ -s changed_sql_files.txt ]; then echo true; else echo false; fi)" >> $GITHUB_OUTPUT
 
       - name: Upload new SQL files to EC2 (if any)
-        if: steps.get_sql_files.outputs.files != ''
+        if: steps.prepare_sql_files.outputs.has_files == 'true'
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "${{ steps.get_sql_files.outputs.files }}"
+          source: "upload_sql/*"
           target: "/home/ubuntu/db/migrations/"
 
       - name: Deploy to EC2 and Import SQL
