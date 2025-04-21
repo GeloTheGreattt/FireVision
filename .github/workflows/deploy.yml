@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: Deploy Code and SQL Migrations to EC2
 
 on:
   push:
@@ -6,19 +6,63 @@ on:
       - main
 
 jobs:
-  deploy:
+  deploy-and-import:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the repo (optional)
+      - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name: Deploy to EC2 via SSH
+      - name: Get changed SQL files and prepare for upload
+        id: prepare_sql_files
+        run: |
+          mkdir upload_sql
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
+            | grep '^db/migrations/.*\.sql$' > changed_sql_files.txt || true
+
+          while IFS= read -r file; do
+            cp "$file" "upload_sql/$(basename "$file")"
+          done < changed_sql_files.txt
+
+          echo "has_files=$(if [ -s changed_sql_files.txt ]; then echo true; else echo false; fi)" >> $GITHUB_OUTPUT
+
+      - name: Upload new SQL files to EC2 (if any)
+        if: steps.prepare_sql_files.outputs.has_files == 'true'
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "upload_sql/*"
+          target: "/home/ubuntu/db/migrations/"
+
+      - name: Deploy to EC2 and Import SQL
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            echo "→ Pulling latest code"
             cd /home/ubuntu/firevision
             git pull origin main
+
+            echo "→ Starting SQL import"
+            mkdir -p /home/ubuntu/db/migrations
+            RECORD_FILE="/home/ubuntu/.migrations_imported.txt"
+            touch $RECORD_FILE
+
+            for FILE in $(ls /home/ubuntu/db/migrations/upload_sql/*.sql 2>/dev/null); do
+              BASENAME=$(basename $FILE)
+              if grep -Fxq "$BASENAME" $RECORD_FILE; then
+                echo "$BASENAME already imported, skipping."
+              else
+                echo "Importing $BASENAME..."
+                mysql -u ${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} ${{ secrets.MYSQL_DB }} < $FILE
+                echo "$BASENAME" >> $RECORD_FILE
+                echo "✓ Imported $BASENAME"
+              fi
+            done
+
