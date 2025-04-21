@@ -1,0 +1,56 @@
+name: Import SQL Migrations to EC2
+
+on:
+  push:
+    branches:
+      - main-sql
+
+jobs:
+  import-sql:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Get list of changed .sql files
+        id: get_sql_files
+        run: |
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
+            | grep '^db/migrations/.*\.sql$' || true > changed_sql_files.txt
+          echo "files=$(cat changed_sql_files.txt | paste -sd "," -)" >> $GITHUB_OUTPUT
+
+      - name: Upload SQL files to EC2
+        if: steps.get_sql_files.outputs.files != ''
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "${{ steps.get_sql_files.outputs.files }}"
+          target: "/home/ubuntu/db/migrations/"
+
+      - name: Import SQL migrations
+        if: steps.get_sql_files.outputs.files != ''
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            mkdir -p /home/ubuntu/db/migrations
+            RECORD_FILE="/home/ubuntu/.migrations_imported.txt"
+            touch $RECORD_FILE
+
+            for FILE in $(ls /home/ubuntu/db/migrations/*.sql); do
+              BASENAME=$(basename $FILE)
+              if grep -Fxq "$BASENAME" $RECORD_FILE; then
+                echo "$BASENAME already imported, skipping."
+              else
+                echo "Importing $BASENAME..."
+                mysql -u ${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} ${{ secrets.MYSQL_DB }} < $FILE
+                echo "$BASENAME" >> $RECORD_FILE
+                echo "Imported $BASENAME."
+              fi
+            done
+
