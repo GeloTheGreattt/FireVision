@@ -54,7 +54,7 @@ jobs:
             RECORD_FILE="/home/ubuntu/.migrations_imported.txt"
             touch $RECORD_FILE
 
-            for FILE in $(ls /home/ubuntu/db/migrations/*.sql 2>/dev/null); do
+            for FILE in $(ls /home/ubuntu/db/migrations/upload_sql/*.sql 2>/dev/null); do
               BASENAME=$(basename $FILE)
               if grep -Fxq "$BASENAME" $RECORD_FILE; then
                 echo "$BASENAME already imported, skipping."
