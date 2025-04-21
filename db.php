@@ -2,8 +2,8 @@
 
 $host = 'localhost'; // Database host
 $dbname = 'firevision'; // Database name
-$username = 'root'; // Database username
-$password = ''; // Database password
+$username = 'firevision'; // Database username
+$password = 'NIAsdZKB1234@'; // Database password
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
