@@ -132,7 +132,7 @@ $(function () {
         let isFireDetected = false;
 
         predictions.forEach(function (prediction) {
-            const fireConfidenceThreshold = 0.60;
+            const fireConfidenceThreshold = 0.43;
             if (prediction.class === "fire" && prediction.confidence >= fireConfidenceThreshold) {
                 isFireDetected = true;
             }
