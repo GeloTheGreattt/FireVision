@@ -21,7 +21,7 @@ try {
     }
 
 
-  /*  $snapshotData = $data['snapshot'];
+    $snapshotData = $data['snapshot'];
     $snapshotPath = null;
     
     if (preg_match('/^data:image\/(\w+);base64,/', $snapshotData, $type)) {
@@ -39,7 +39,7 @@ try {
     
         $filename = 'snapshots/' . uniqid('snapshot_', true) . '.' . $type;
         file_put_contents($filename, $snapshotData);
-        $snapshotPath = $filename; */
+        $snapshotPath = $filename;
     }
 
     // Insert alert into the database
